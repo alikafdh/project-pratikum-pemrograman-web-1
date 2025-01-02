@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kamar</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <script src="../assets/js/jquery-3.7.1.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">Selamat Datang Admin</a>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" onclick="return confirm('Apakah anda yakin akan keluar?')" href="index.html">Log Out</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid mt-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="kamar.html">Kamar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="fasilitas.html">Fasilitas</a>
+            </li>
+        </ul>
+
+        <div class="m-4">
+            <h3>Data Kamar</h3>
+            <button class="btn btn-primary mb-3" id="btn-add">Tambah Kamar</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipe Kamar</th>
+                        <th>Harga</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data-kamar">
+                    <!-- Data akan dimuat di sini menggunakan jQuery -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="kamarModal" tabindex="-1" aria-labelledby="kamarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kamarModalLabel">Form Kamar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="kamarForm">
+                        <input type="hidden" id="kamar-id">
+                        <div class="mb-3">
+                            <label for="kamar-tipe" class="form-label">Tipe Kamar</label>
+                            <input type="text" class="form-control" id="kamar-tipe" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kamar-harga" class="form-label">Harga</label>
+                            <input type="number" class="form-control" id="kamar-harga" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let dataKamar = [
+                { id: 1, tipe: "Standar", harga: 500000 },
+                { id: 2, tipe: "Deluxe", harga: 750000 },
+                { id: 2, tipe: "Family", harga: 1000000 }
+            ];
+
+            function loadData() {
+                let rows = "";
+                dataKamar.forEach((item, index) => {
+                    rows += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.tipe}</td>
+                        <td>Rp ${item.harga.toLocaleString()}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-edit" data-index="${index}">Edit</button>
+                            <button class="btn btn-danger btn-sm btn-delete" data-index="${index}">Hapus</button>
+                        </td>
+                    </tr>`;
+                });
+                $("#data-kamar").html(rows);
+            }
+
+            loadData();
+
+            $("#btn-add").click(function () {
+                $("#kamarForm")[0].reset();
+                $("#kamar-id").val("");
+                $("#kamarModal").modal("show");
+            });
+
+            $("#kamarForm").submit(function (e) {
+                e.preventDefault();
+                const id = $("#kamar-id").val();
+                const tipe = $("#kamar-tipe").val();
+                const harga = $("#kamar-harga").val();
+
+                if (id) {
+                    const index = dataKamar.findIndex(k => k.id == id);
+                    dataKamar[index] = { id: parseInt(id), tipe, harga: parseInt(harga) };
+                } else {
+                    const newId = dataKamar.length ? dataKamar[dataKamar.length - 1].id + 1 : 1;
+                    dataKamar.push({ id: newId, tipe, harga: parseInt(harga) });
+                }
+
+                loadData();
+                $("#kamarModal").modal("hide");
+            });
+
+            $(document).on("click", ".btn-edit", function () {
+                const index = $(this).data("index");
+                const kamar = dataKamar[index];
+
+                $("#kamar-id").val(kamar.id);
+                $("#kamar-tipe").val(kamar.tipe);
+                $("#kamar-harga").val(kamar.harga);
+                $("#kamarModal").modal("show");
+            });
+
+            $(document).on("click", ".btn-delete", function () {
+                const index = $(this).data("index");
+                if (confirm("Apakah Anda yakin ingin menghapus kamar ini?")) {
+                    dataKamar.splice(index, 1);
+                    loadData();
+                }
+            });
+        });
+    </script>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

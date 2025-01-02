@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Fasilitas</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <script src="../assets/js/jquery-3.7.1.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6">Selamat Datang Admin</a>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" onclick="return confirm('Apakah anda yakin akan keluar?')" href="index.html">Log Out</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid mt-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="kamar.html">Kamar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="fasilitas.html">Fasilitas</a>
+            </li>
+        </ul>
+
+        <div class="m-4">
+            <h3>Data Fasilitas</h3>
+            <button class="btn btn-primary mb-3" id="btn-add">Tambah Fasilitas</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Fasilitas</th>
+                        <th>Harga</th>
+                        <th>Kapasitas</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data-fasilitas">
+                    <!-- Data akan dimuat di sini menggunakan jQuery -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="fasilitasModal" tabindex="-1" aria-labelledby="fasilitasModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fasilitasModalLabel">Form Fasilitas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="fasilitasForm">
+                        <input type="hidden" id="fasilitas-id">
+                        <div class="mb-3">
+                            <label for="fasilitas-nama" class="form-label">Nama Fasilitas</label>
+                            <input type="text" class="form-control" id="fasilitas-nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fasilitas-harga" class="form-label">Harga</label>
+                            <input type="number" class="form-control" id="fasilitas-harga" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fasilitas-kapasitas" class="form-label">Kapasitas</label>
+                            <input type="number" class="form-control" id="fasilitas-kapasitas" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let dataFasilitas = [
+                { id: 1, nama: "Kolam Renang", harga: 120000, kapasitas: 4 },
+                { id: 2, nama: "Gym", harga: 80000, kapasitas: 10 },
+                { id: 3, nama: "Meeting Room", harga: 500000, kapasitas: 10 },
+                { id: 4, nama: "Spa", harga: 150000, kapasitas: 2 }
+            ];
+
+            function loadData() {
+                let rows = "";
+                dataFasilitas.forEach((item, index) => {
+                    rows += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.nama}</td>
+                        <td>Rp ${item.harga.toLocaleString()}</td>
+                        <td>${item.kapasitas}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-edit" data-index="${index}">Edit</button>
+                            <button class="btn btn-danger btn-sm btn-delete" data-index="${index}">Hapus</button>
+                        </td>
+                    </tr>`;
+                });
+                $("#data-fasilitas").html(rows);
+            }
+
+            loadData();
+
+            $("#btn-add").click(function () {
+                $("#fasilitasForm")[0].reset();
+                $("#fasilitas-id").val("");
+                $("#fasilitasModal").modal("show");
+            });
+
+            $("#fasilitasForm").submit(function (e) {
+                e.preventDefault();
+                const id = $("#fasilitas-id").val();
+                const nama = $("#fasilitas-nama").val();
+                const harga = $("#fasilitas-harga").val();
+                const kapasitas = $("#fasilitas-kapasitas").val();
+
+                if (id) {
+                    const index = dataFasilitas.findIndex(f => f.id == id);
+                    dataFasilitas[index] = { id: parseInt(id), nama, harga: parseInt(harga), kapasitas: parseInt(kapasitas) };
+                } else {
+                    const newId = dataFasilitas.length ? dataFasilitas[dataFasilitas.length - 1].id + 1 : 1;
+                    dataFasilitas.push({ id: newId, nama, harga: parseInt(harga), kapasitas: parseInt(kapasitas) });
+                }
+
+                loadData();
+                $("#fasilitasModal").modal("hide");
+            });
+
+            $(document).on("click", ".btn-edit", function () {
+                const index = $(this).data("index");
+                const fasilitas = dataFasilitas[index];
+
+                $("#fasilitas-id").val(fasilitas.id);
+                $("#fasilitas-nama").val(fasilitas.nama);
+                $("#fasilitas-harga").val(fasilitas.harga);
+                $("#fasilitas-kapasitas").val(fasilitas.kapasitas);
+                $("#fasilitasModal").modal("show");
+            });
+
+            $(document).on("click", ".btn-delete", function () {
+                const index = $(this).data("index");
+                if (confirm("Apakah Anda yakin ingin menghapus fasilitas ini?")) {
+                    dataFasilitas.splice(index, 1);
+                    loadData();
+                }
+            });
+        });
+    </script>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

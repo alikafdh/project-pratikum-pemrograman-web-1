@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <script src="../assets/js/jquery-3.7.1.js"></script>
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+      <h2 class="text-center">Login</h2>
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Masukkan Username" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Masukkan Password" required>
+        </div>
+        <div id="error-message" class="text-danger mb-3" style="display: none;">Username atau password salah!</div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="../assets/js/script.js"></script>
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      // Simulasi data login
+      const validUser = {
+        username: "admin",
+        password: "admin"
+      };
+
+      // Event handler untuk form login
+      $('#loginForm').submit(function (event) {
+        event.preventDefault(); // Mencegah reload halaman
+
+        const username = $('#username').val();
+        const password = $('#password').val();
+
+        // Validasi login
+        if (username === validUser.username && password === validUser.password) {
+          alert("Login berhasil!");
+          // Redirect atau aksi lainnya
+          window.location.href = "dashboard.html";
+        } else {
+          $('#error-message').show();
+        }
+      });
+
+      // Sembunyikan pesan error saat input diubah
+      $('#username, #password').on('input', function () {
+        $('#error-message').hide();
+      });
+    });
+  </script>
+</body>
+</html>

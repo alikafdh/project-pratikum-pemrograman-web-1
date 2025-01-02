@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <script src="../assets/js/jquery-3.7.1.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">Selamat Datang Admin</a>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" onclick="return confirm('Apakah anda yakin akan keluar?')" href="index.html">Log Out</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid mt-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="kamar.html">Kamar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="fasilitas.html">Fasilitas</a>
+            </li>
+        </ul>
+
+        <div class="m-4">
+            <h3>Data Pemesanan</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Pemesan</th>
+                        <th>No Identitas</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Tipe Kamar</th>
+                        <th>Durasi Menginap</th>
+                        <th>Tanggal Pesan</th>
+                        <th>Diskon</th>
+                        <th>Total Bayar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data-pemesanan">
+                    <!-- Data akan dimuat di sini menggunakan jQuery -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Pemesanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label for="edit-nama" class="form-label">Nama Pemesan</label>
+                            <input type="text" class="form-control" id="edit-nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-identitas" class="form-label">No Identitas</label>
+                            <input type="text" class="form-control" id="edit-identitas" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-gender" class="form-label">Jenis Kelamin</label>
+                            <select class="form-control" id="edit-gender">
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-tipe-kamar" class="form-label">Tipe Kamar</label>
+                            <input type="text" class="form-control" id="edit-tipe-kamar" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-durasi" class="form-label">Durasi Menginap</label>
+                            <input type="number" class="form-control" id="edit-durasi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-tanggal" class="form-label">Tanggal Pesan</label>
+                            <input type="date" class="form-control" id="edit-tanggal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-diskon" class="form-label">Diskon</label>
+                            <input type="number" class="form-control" id="edit-diskon" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-total" class="form-label">Total Bayar</label>
+                            <input type="number" class="form-control" id="edit-total" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Data dummy
+            let dataPemesanan = [
+                {
+                    id: 1, 
+                    nama: "Alika", 
+                    identitas: "1234567887654321", 
+                    gender: "Laki-laki", 
+                    tipeKamar: "Deluxe", 
+                    durasi: 4, 
+                    tanggal: "2025-01-01", 
+                    diskon: 10, 
+                    total: 2780000
+                },
+                {
+                    id: 2, 
+                    nama: "Fadil", 
+                    identitas: "8765432112345678", 
+                    gender: "Laki-laki", 
+                    tipeKamar: "Standar", 
+                    durasi: 2, 
+                    tanggal: "2025-01-02", 
+                    diskon: 0, 
+                    total: 1000000
+                }
+            ];
+
+            // Fungsi untuk memuat data ke tabel
+            function loadData() {
+                let rows = "";
+                dataPemesanan.forEach(item => {
+                    rows += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.nama}</td>
+                        <td>${item.identitas}</td>
+                        <td>${item.gender}</td>
+                        <td>${item.tipeKamar}</td>
+                        <td>${item.durasi} malam</td>
+                        <td>${item.tanggal}</td>
+                        <td>${item.diskon}%</td>
+                        <td>Rp ${item.total.toLocaleString()}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-edit" data-id="${item.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm btn-delete" data-id="${item.id}">Hapus</button>
+                        </td>
+                    </tr>`;
+                });
+                $("#data-pemesanan").html(rows);
+            }
+
+            // Memuat data awal
+            loadData();
+
+            // Tombol Edit
+            $(document).on("click", ".btn-edit", function () {
+                const id = $(this).data("id");
+                const item = dataPemesanan.find(d => d.id === id);
+
+                $("#edit-id").val(item.id);
+                $("#edit-nama").val(item.nama);
+                $("#edit-identitas").val(item.identitas);
+                $("#edit-gender").val(item.gender);
+                $("#edit-tipe-kamar").val(item.tipeKamar);
+                $("#edit-durasi").val(item.durasi);
+                $("#edit-tanggal").val(item.tanggal);
+                $("#edit-diskon").val(item.diskon);
+                $("#edit-total").val(item.total);
+                $("#editModal").modal("show");
+            });
+
+            // Submit Form Edit
+            $("#editForm").submit(function (e) {
+                e.preventDefault();
+                const id = $("#edit-id").val();
+                const nama = $("#edit-nama").val();
+                const identitas = $("#edit-identitas").val();
+                const gender = $("#edit-gender").val();
+                const tipeKamar = $("#edit-tipe-kamar").val();
+                const durasi = $("#edit-durasi").val();
+                const tanggal = $("#edit-tanggal").val();
+                const diskon = $("#edit-diskon").val();
+                const total = $("#edit-total").val();
+
+                const index = dataPemesanan.findIndex(d => d.id == id);
+                if (index !== -1) {
+                    dataPemesanan[index] = {
+                        id: parseInt(id),
+                        nama,
+                        identitas,
+                        gender,
+                        tipeKamar,
+                        durasi: parseInt(durasi),
+                        tanggal,
+                        diskon: parseInt(diskon),
+                        total: parseInt(total)
+                    };
+                    loadData();
+                    $("#editModal").modal("hide");
+                }
+            });
+
+            // Tombol Hapus
+            $(document).on("click", ".btn-delete", function () {
+                const id = $(this).data("id");
+                if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                    dataPemesanan = dataPemesanan.filter(d => d.id !== id);
+                    loadData();
+                }
+            });
+        });
+    </script>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
